@@ -1,0 +1,15 @@
+.env
+CHEAT.md
+.DS_Store
+TO-DO.md
+
+###> symfony/framework-bundle ###
+/app/.env.dev
+/app/.env.local
+/app/.env.local.php
+/app/.env.*.local
+/app/config/secrets/prod/prod.decrypt.private.php
+/app/public/bundles/
+/app/var/
+/app/vendor/
+###< symfony/framework-bundle ###

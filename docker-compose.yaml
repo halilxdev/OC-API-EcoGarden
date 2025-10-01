@@ -1,0 +1,77 @@
+services:
+  # Service Nginx - Serveur web
+  nginx:
+    image: nginx:alpine
+    container_name: symfony_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"      # Port pour accéder à l'application
+    volumes:
+      - ./app:/var/www/symfony           # Code de l'application
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - symfony-network
+
+  # Service PHP - Application Symfony
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: symfony_php
+    restart: unless-stopped
+    volumes:
+      - ./app:/var/www/symfony           # Partage du code avec le container
+    networks:
+      - symfony-network
+    depends_on:
+      - database
+
+  # Service MySQL - Base de données
+  database:
+    image: mysql:8.0
+    platform: linux/amd64  # ← Ajoutez cette ligne aussi
+    container_name: symfony_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql                    # Persistance des données
+      # - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf  # Configuration personnalisée
+    ports:
+      - "3306:3306"  # Port pour connexion directe si besoin
+    networks:
+      - symfony-network
+
+  # Service PHPMyAdmin - Interface de gestion de base de données
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    platform: linux/amd64  # ← Ajoutez cette ligne
+    container_name: symfony_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database                 # Nom du service MySQL
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+      UPLOAD_LIMIT: 1G                   # Limite pour l'import de fichiers
+    ports:
+      - "8080:80"    # Port pour accéder à PHPMyAdmin
+    depends_on:
+      - database
+    networks:
+      - symfony-network
+
+# Réseau personnalisé pour isoler les services
+networks:
+  symfony-network:
+    driver: bridge
+
+# Volume pour la persistance des données MySQL
+volumes:
+  db_data:
+    driver: local
