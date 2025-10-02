@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Advice;
 use App\Repository\AdviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,5 +18,12 @@ final class AdviceController extends AbstractController
         $adviceList = $adviceRepository->findAll();
         $jsonAdviceList = $serializer->serialize($adviceList, 'json', ['groups' => 'getAdvices']);
         return new JsonResponse($jsonAdviceList, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/advice/{id}', name: 'detailAdvice', methods: ['GET'])]
+    public function getDetailBook(Advice $advice, SerializerInterface $serializer): JsonResponse 
+    {
+        $jsonAdvice = $serializer->serialize($advice, 'json', ['groups' => 'getAdvices']);
+        return new JsonResponse($jsonAdvice, Response::HTTP_OK, [], true);
     }
 }
