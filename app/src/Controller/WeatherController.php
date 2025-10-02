@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class WeatherController extends AbstractController
 {
-    #[Route('/weather', name: 'app_weather')]
+    #[Route('/api/meteo', name: 'app_weather', methods: 'GET')]
     public function index(): JsonResponse
     {
         return $this->json([
