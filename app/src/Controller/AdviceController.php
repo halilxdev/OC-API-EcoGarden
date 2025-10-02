@@ -12,18 +12,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 final class AdviceController extends AbstractController
 {
-    #[Route('/api/advice', name: 'advice', methods: ['GET'])]
-    public function getAllAdvices(AdviceRepository $adviceRepository, SerializerInterface $serializer): JsonResponse
+    #[Route('/api/conseil', name: 'advice_current_month', methods: ['GET'])]
+    #[Route('/api/conseil/{id}', name: 'advice', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function getAllAdvicesThisMonth(AdviceRepository $adviceRepository, SerializerInterface $serializer, ?int $id = null): JsonResponse
     {
-        $adviceList = $adviceRepository->findAll();
+        $month = $id ?? (int)date('n');
+        $adviceList = $adviceRepository->findByMonth($month);
         $jsonAdviceList = $serializer->serialize($adviceList, 'json', ['groups' => 'getAdvices']);
         return new JsonResponse($jsonAdviceList, Response::HTTP_OK, [], true);
-    }
-
-    #[Route('/api/advice/{id}', name: 'detailAdvice', methods: ['GET'])]
-    public function getDetailBook(Advice $advice, SerializerInterface $serializer): JsonResponse 
-    {
-        $jsonAdvice = $serializer->serialize($advice, 'json', ['groups' => 'getAdvices']);
-        return new JsonResponse($jsonAdvice, Response::HTTP_OK, [], true);
     }
 }
