@@ -24,6 +24,7 @@ class AppFixtures extends Fixture
         $user->setEmail("user@ecogarden.com");
         $user->setRoles(["ROLE_USER"]);
         $user->setPassword($this->userPasswordHasher->hashPassword($user, "password"));
+        $user->setZipCode(57100);
         $manager->persist($user);
         
         // Création d'un user admin
@@ -31,6 +32,7 @@ class AppFixtures extends Fixture
         $userAdmin->setEmail("admin@ecogarden.com");
         $userAdmin->setRoles(["ROLE_ADMIN"]);
         $userAdmin->setPassword($this->userPasswordHasher->hashPassword($userAdmin, "password"));
+        $userAdmin->setZipCode(57450);
         $manager->persist($userAdmin);
 
         // Création d'une trentaine de conseils

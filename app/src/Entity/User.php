@@ -31,6 +31,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\Column]
+    private ?int $zip_code = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -118,5 +121,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    public function getZipCode(): ?int
+    {
+        return $this->zip_code;
+    }
+
+    public function setZipCode(int $zip_code): static
+    {
+        $this->zip_code = $zip_code;
+
+        return $this;
     }
 }
