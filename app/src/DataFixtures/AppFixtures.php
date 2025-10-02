@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Advice;
+use App\Entity\Month;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -11,7 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private $userPasswordHasher;
-    
+
     public function __construct(UserPasswordHasherInterface $userPasswordHasher)
     {
         $this->userPasswordHasher = $userPasswordHasher;
@@ -19,6 +20,30 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        // Création des mois
+        $monthArray = [
+            ["numeric_value"=> 1,"name"=> "Janvier"],
+            ["numeric_value"=> 2,"name"=> "Février"],
+            ["numeric_value"=> 3,"name"=> "Mars"],
+            ["numeric_value"=> 4,"name"=> "Avril"],
+            ["numeric_value"=> 5,"name"=> "Mai"],
+            ["numeric_value"=> 6,"name"=> "Juin"],
+            ["numeric_value"=> 7,"name"=> "Juillet"],
+            ["numeric_value"=> 8,"name"=> "Août"],
+            ["numeric_value"=> 9,"name"=> "Septembre"],
+            ["numeric_value"=> 10,"name"=> "Octobre"],
+            ["numeric_value"=> 11,"name"=> "Novembre"],
+            ["numeric_value"=> 12,"name"=> "Décembre"]
+        ];
+        $months = [];
+        foreach($monthArray as $m) {
+            $month = new Month();
+            $month->setNumericValue($m['numeric_value']);
+            $month->setName($m['name']);
+            $manager->persist($month);
+            $months[] = $month;
+        }
+
         // Création d'un user sans privilèges particuliers
         $user = new User();
         $user->setEmail("user@ecogarden.com");
@@ -37,9 +62,10 @@ class AppFixtures extends Fixture
 
         // Création d'une trentaine de conseils
         for ($i = 0; $i < 50; $i++) {
+            $randomMonth = $months[array_rand($months)];
             $advice = new Advice();
-            $advice->setMonth(rand(1,12));
             $advice->setText('Conseil numéro : ' . $i);
+            $advice->addMonth($randomMonth);
             $manager->persist($advice);
         }
         $manager->flush();
