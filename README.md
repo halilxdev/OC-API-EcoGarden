@@ -59,9 +59,11 @@ Body :
 ## Liste de choses à faire
 
 ### IMPORTANT
-- [x] Faire un HTTP GET pour /api/conseil/{id}
-- [ ] Construire les routes CRUD pour la route /api/user
+- [x] Faire un HTTP GET pour /api/conseil/{mois}
+- [ ] Construire les routes POST, DELETE, PUT pour la route /api/conseil
 
 ### BONUS
 **Fixtures**
+- [ ] Créer un fichier EcoGarden.sql pour insérer les données de la table `month`
 - [ ] Revoir la création de données en ce qui concerne les `month` des entités `advice`. Plus logique d'avoir des mois qui se suivent pour les conseils (trimestres, saisons, etc...)
+- [ ] Utiliser faker pour avoir des données plus cohérentes
