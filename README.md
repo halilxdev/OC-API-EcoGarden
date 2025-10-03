@@ -1,6 +1,6 @@
 # API EcoGarden // Mission OpenClassRooms
 
-Les routes sont à tester à cette adresse : http://127.0.0.1:8000/api/
+Les routes sont à tester à cette adresse : http://127.0.0.1:8000/api/ via POSTMAN par exemple.
 
 ## Étape 2 — Les routes
 
@@ -24,7 +24,31 @@ Les routes sont à tester à cette adresse : http://127.0.0.1:8000/api/
 
 ### Pour toutes les routes
 Headers :
+
 | Content-Type | application/json |
+
+### Pour les routes d'authentification
+
+**POST /api/user**
+Body :
+
+```json
+{
+    "username": "votre@adresse.mail",
+    "password": "m0t_dePasse",
+    "zip_code": 12345
+}
+```
+
+**POST /api/auth**
+Body :
+
+```json
+{
+    "username": "votre@adresse.mail",
+    "password": "m0t_dePasse"
+}
+```
 
 ## Liste de choses à faire
 
