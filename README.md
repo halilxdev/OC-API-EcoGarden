@@ -30,6 +30,7 @@ Headers :
 ### Pour les routes d'authentification
 
 **POST /api/user**
+
 Body :
 
 ```json
@@ -40,7 +41,12 @@ Body :
 }
 ```
 
-**POST /api/auth**
+<!-- **POST /api/auth**
+
+Headers :
+
+| Authorization | bearer paste_your_token_here |
+
 Body :
 
 ```json
@@ -48,7 +54,7 @@ Body :
     "username": "votre@adresse.mail",
     "password": "m0t_dePasse"
 }
-```
+``` -->
 
 ## Liste de choses à faire
 
