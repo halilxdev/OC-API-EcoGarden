@@ -1,7 +1,8 @@
 # API EcoGarden // Mission OpenClassRooms
 
 Les routes sont à tester à cette adresse : http://127.0.0.1:8000/api/ via POSTMAN par exemple.
-Clé API OpenWeather : 7931eede7141d3223eefcb53948817d0
+<!-- Clé API OpenWeather : 7931eede7141d3223eefcb53948817d0
+Clé Lexik JWT : password -->
 
 ## Étape 2 — Les routes
 
