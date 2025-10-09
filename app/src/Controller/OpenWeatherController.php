@@ -32,17 +32,13 @@ final class OpenWeatherController extends AbstractController
             return new JsonResponse(['error' => 'Clé API manquante. Utilisez le header X-API-Key ou le paramètre api_key'], 400);
         }
 
-        // Priorité : ville dans l'URL > code postal utilisateur > erreur
         if ($city) {
-            // Normaliser le nom de ville (gérer les accents)
             $normalizedCity = $this->normalizeCity($city);
-
             try {
                 $response = $httpClient->request(
                     'GET',
                     sprintf('https://api.openweathermap.org/data/2.5/weather?q=%s,FR&appid=%s&units=metric&lang=fr', $normalizedCity, $apiKey)
                 );
-
                 return new JsonResponse($response->getContent(), $response->getStatusCode(), [], true);
             } catch (\Exception $e) {
                 return new JsonResponse([
@@ -53,7 +49,6 @@ final class OpenWeatherController extends AbstractController
             }
         }
 
-        // Si pas de ville, utiliser le code postal
         $zipCode = $request->query->get('zip_code');
 
         if (!$zipCode && $user) {
@@ -64,7 +59,6 @@ final class OpenWeatherController extends AbstractController
             return new JsonResponse(['error' => 'Ville ou code postal manquant. Spécifiez une ville dans l\'URL, connectez-vous ou utilisez le paramètre zip_code'], 400);
         }
 
-        // Validation du code postal français (5 chiffres)
         if (!preg_match('/^[0-9]{5}$/', (string)$zipCode)) {
             return new JsonResponse(['error' => 'Code postal invalide. Doit être composé de 5 chiffres'], 400);
         }
@@ -74,7 +68,6 @@ final class OpenWeatherController extends AbstractController
                 'GET',
                 sprintf('https://api.openweathermap.org/data/2.5/weather?zip=%s,FR&appid=%s&units=metric&lang=fr', $zipCode, $apiKey)
             );
-
             return new JsonResponse($response->getContent(), $response->getStatusCode(), [], true);
         } catch (\Exception $e) {
             return new JsonResponse([

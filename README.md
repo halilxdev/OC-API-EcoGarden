@@ -15,8 +15,8 @@ Clé Lexik JWT : password -->
 
 - [x] GET /api/conseil/{mois}
 - [x] GET /api/conseil (mois en cours)
-- [ ] GET /api/meteo/{ville}
-- [ ] GET /api/meteo (ville de l'utilisateur)
+- [x] GET /api/meteo/{ville}
+- [x] GET /api/meteo (ville de l'utilisateur)
 
 ### Utilisateur administrateurs
 
