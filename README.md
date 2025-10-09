@@ -23,7 +23,6 @@ Clé Lexik JWT : password -->
 - [x] POST /api/conseil
 - [x] PUT /api/conseil/{id}
 - [x] DELETE /api/conseil/{id}
-
 - [x] PUT /api/user/{id}
 - [x] DELETE /api/user/{id}
 
@@ -31,27 +30,13 @@ Clé Lexik JWT : password -->
 
 ### Pour toutes les routes
 
-| [ ] | Content-Type | application/json |
-|---|---|---|
+| Content-Type | application/json |
+|---|---|
 
 ### Pour toutes les routes nécessitant une authentification
 
-| [ ] | Authorization | bearer votreTokenDidentification |
-|---|---|---|
-
-### Pour les routes d'authentification
-
-**POST /api/user**
-
-Body :
-
-```json
-{
-    "username": "votre@adresse.mail",
-    "password": "m0t_dePasse",
-    "zip_code": 12345
-}
-```
+| Authorization | bearer votreTokenDidentification |
+|---|---|
 
 ## Liste de choses à faire
 
