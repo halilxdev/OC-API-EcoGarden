@@ -8,17 +8,17 @@ Clé Lexik JWT : password -->
 
 - [x] POST /api/user
 - [x] POST /api/auth
+- [ ] PUT /api/user/{id}
+- [ ] DELETE /api/user/{id}
 
 - [x] GET /api/conseil/{mois}
 - [x] GET /api/conseil (mois en cours)
-- [ ] GET /api/meteo/{ville}
-- [ ] GET /api/meteo (ville de l'utilisateur)
-
 - [ ] POST /api/conseil
 - [ ] PUT /api/conseil/{id}
 - [ ] DELETE /api/conseil/{id}
-- [ ] PUT /api/user/{id}
-- [ ] DELETE /api/user/{id}
+
+- [ ] GET /api/meteo/{ville}
+- [ ] GET /api/meteo (ville de l'utilisateur)
 
 ## Exemple de paramètres à envoyer sur les routes
 
@@ -26,12 +26,14 @@ Clé Lexik JWT : password -->
 Headers :
 
 | Content-Type | application/json |
+|---|---|
 | Authorization | bearer votreTokenDidentificationSiBesoin |
 
 ### Pour toutes les routes nécessitant une authentification
 Headers :
 
 | Content-Type | application/json |
+|---|---|
 | Authorization | bearer votreTokenDidentification |
 
 ### Pour les routes d'authentification
