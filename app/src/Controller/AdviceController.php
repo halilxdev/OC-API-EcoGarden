@@ -65,14 +65,11 @@ final class AdviceController extends AbstractController
     public function createAdvice(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, MonthRepository $monthRepository, ValidatorInterface $validator): JsonResponse {
 
         $content = $request->toArray();
-        
         $advice = new Advice();
         $advice->setText($content['text']);
-
-        // On vérifie les erreurs
         $errors = $validator->validate($advice);
         if ($errors->count() > 0) {
-            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+            throw new NotFoundHttpException('Une erreur est survenue. Un ou plusieurs champs sont vides ou incorrects.');
         }
 
         $monthValue = $content['month'] ?? (int)date('n');
