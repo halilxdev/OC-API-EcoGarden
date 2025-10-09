@@ -89,27 +89,36 @@ final class AdviceController extends AbstractController
 
     #[Route('/api/conseil/{id}', name:"updateAdvice", methods:['PUT'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour mettre à jour le conseil')]
-    public function updateAdvice(Request $request, SerializerInterface $serializer, Advice $currentAdvice, EntityManagerInterface $em): JsonResponse 
+    public function updateAdvice(int $id, AdviceRepository $adviceRepository, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse 
     {
-        $updatedAdvice = $serializer->deserialize($request->getContent(), 
-                Advice::class, 
-                'json', 
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $currentAdvice]);
-        $em->persist($updatedAdvice);
-        $em->flush();
-        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        $advice = $adviceRepository->find($id);
+        if($advice)
+        {
+            $updatedAdvice = $serializer->deserialize($request->getContent(),
+                    Advice::class,
+                    'json',
+                    [AbstractNormalizer::OBJECT_TO_POPULATE => $advice]);
+            $em->persist($updatedAdvice);
+            $em->flush();
+            return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        }
+        throw new NotFoundHttpException('Le conseil selectionné n\'existe pas. Veuillez réessayer.');
     }
 
     #[Route('/api/conseil/{id}', name: 'deleteAdvice', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour supprimer un conseil')]
-    public function deleteAdvice(Advice $advice, EntityManagerInterface $em): JsonResponse
+    public function deleteAdvice(int $id, AdviceRepository $adviceRepository, EntityManagerInterface $em): JsonResponse
     {
-        foreach ($advice->getMonth() as $month) {
-            $advice->removeMonth($month);
+        $advice = $adviceRepository->find($id);
+        if($advice)
+        {
+            foreach ($advice->getMonth() as $month) {
+                $advice->removeMonth($month);
+            }
+            $em->remove($advice);
+            $em->flush();
+            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
         }
-
-        $em->remove($advice);
-        $em->flush();
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        throw new NotFoundHttpException(message:'Le conseil selectionné n\'existe pas. Veuillez réessayer.');
     }
 }
