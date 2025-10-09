@@ -29,6 +29,7 @@ class Advice
      */
     #[ORM\ManyToMany(targetEntity: Month::class, inversedBy: 'advice')]
     #[ORM\JoinTable(name: 'advice_month')]
+    #[Assert\Count(min: 1,minMessage: "Au moins un mois doit être sélectionné pour ce conseil")]
     #[Groups(["getAdvices"])]
     private Collection $month;
 
