@@ -31,14 +31,13 @@ Clé Lexik JWT : password -->
 
 ### Pour toutes les routes
 
-| Content-Type | application/json |
-|---|---|
+| [ ] | Content-Type | application/json |
+|---|---|---|
 
 ### Pour toutes les routes nécessitant une authentification
 
-| Content-Type | application/json |
-|---|---|
-| Authorization | bearer votreTokenDidentification |
+| [ ] | Authorization | bearer votreTokenDidentification |
+|---|---|---|
 
 ### Pour les routes d'authentification
 
