@@ -54,7 +54,7 @@ final class AdviceController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/conseil', name:"createAdvice", methods: ['POST'])]
-    #[IsGranted('ROLE_USER', message: 'Vous n\'avez pas les droits suffisants pour créer un livre')]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un conseil')]
     public function createAdvice(Request $request, SerializerInterface $serializer, EntityManagerInterface $em,
         UrlGeneratorInterface $urlGenerator, MonthRepository $monthRepository, ValidatorInterface $validator): JsonResponse {
 

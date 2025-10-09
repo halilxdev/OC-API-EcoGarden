@@ -4,12 +4,10 @@ Les routes sont à tester à cette adresse : http://127.0.0.1:8000/api/ via POST
 <!-- Clé API OpenWeather : 7931eede7141d3223eefcb53948817d0
 Clé Lexik JWT : password -->
 
-## Étape 2 — Les routes
-
 ## Liste des routes
 
-- [ ] POST /api/user
-- [ ] POST /api/auth
+- [x] POST /api/user
+- [x] POST /api/auth
 
 - [x] GET /api/conseil/{mois}
 - [x] GET /api/conseil (mois en cours)
@@ -28,6 +26,13 @@ Clé Lexik JWT : password -->
 Headers :
 
 | Content-Type | application/json |
+| Authorization | bearer votreTokenDidentificationSiBesoin |
+
+### Pour toutes les routes nécessitant une authentification
+Headers :
+
+| Content-Type | application/json |
+| Authorization | bearer votreTokenDidentification |
 
 ### Pour les routes d'authentification
 
@@ -42,21 +47,6 @@ Body :
     "zip_code": 12345
 }
 ```
-
-<!-- **POST /api/auth**
-
-Headers :
-
-| Authorization | bearer paste_your_token_here |
-
-Body :
-
-```json
-{
-    "username": "votre@adresse.mail",
-    "password": "m0t_dePasse"
-}
-``` -->
 
 ## Liste de choses à faire
 
