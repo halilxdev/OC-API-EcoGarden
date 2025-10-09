@@ -23,8 +23,8 @@ class AdviceRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->join('a.month', 'm')
-            ->andWhere('m.id = :month_id')
-            ->setParameter('month_id', $value)
+            ->andWhere('m.numeric_value = :month_value')
+            ->setParameter('month_value', $value)
             ->getQuery()
             ->getResult()
         ;

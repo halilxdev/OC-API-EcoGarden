@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -33,6 +34,11 @@ final class AdviceController extends AbstractController
     public function getAllAdvicesThisMonth(AdviceRepository $adviceRepository, SerializerInterface $serializer, ?int $id = null): JsonResponse
     {
         $month = $id ?? (int)date('n');
+
+        if ($month < 1 || $month > 12) {
+            throw new NotFoundHttpException('Le mois selectionné n\'existe pas. Veuillez indiquer un mois dans le format numérique entre 1 et 12');
+        }
+
         $adviceList = $adviceRepository->findByMonth($month);
         $jsonAdviceList = $serializer->serialize($adviceList, 'json', ['groups' => 'getAdvices']);
         return new JsonResponse($jsonAdviceList, Response::HTTP_OK, [], true);
