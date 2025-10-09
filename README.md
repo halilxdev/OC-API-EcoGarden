@@ -52,6 +52,7 @@ Body :
 
 ### IMPORTANT
 - [x] Faire un HTTP GET pour /api/conseil/{mois}
+- [x] Hachage des mots de passe quand un utilisateur est crée
 - [ ] Construire les routes POST, DELETE, PUT pour la route /api/conseil
 
 ### BONUS
