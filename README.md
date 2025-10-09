@@ -21,8 +21,8 @@ Clé Lexik JWT : password -->
 ### Utilisateur administrateurs
 
 - [x] POST /api/conseil
-- [ ] PUT /api/conseil/{id}
-- [ ] DELETE /api/conseil/{id}
+- [x] PUT /api/conseil/{id}
+- [x] DELETE /api/conseil/{id}
 
 - [x] PUT /api/user/{id}
 - [x] DELETE /api/user/{id}
@@ -58,7 +58,7 @@ Body :
 ### IMPORTANT
 - [x] Faire un HTTP GET pour /api/conseil/{mois}
 - [x] Hachage des mots de passe quand un utilisateur est crée
-- [ ] Construire les routes POST, DELETE, PUT pour la route /api/conseil
+- [x] Construire les routes POST, DELETE, PUT pour la route /api/conseil
 
 ### BONUS
 **Fixtures**

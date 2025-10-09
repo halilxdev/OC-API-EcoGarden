@@ -28,6 +28,7 @@ class Advice
      * @var Collection<int, Month>
      */
     #[ORM\ManyToMany(targetEntity: Month::class, inversedBy: 'advice')]
+    #[ORM\JoinTable(name: 'advice_month')]
     #[Groups(["getAdvices"])]
     private Collection $month;
 

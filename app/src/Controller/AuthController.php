@@ -56,14 +56,13 @@ final class AuthController extends AbstractController
                 User::class, 
                 'json', 
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $currentUser]);
-        $content = $request->toArray();        
         $em->persist($updatedUser);
         $em->flush();
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
     #[Route('/api/user/{id}', name: 'deleteUser', methods: ['DELETE'])]
-    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour supprimer un livre')]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour supprimer un utilisateur')]
     public function deleteUser(User $user, EntityManagerInterface $em): JsonResponse 
     {
         $em->remove($user);
