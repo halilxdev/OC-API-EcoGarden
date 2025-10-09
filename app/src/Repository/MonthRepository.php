@@ -26,6 +26,16 @@ class MonthRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findByNumericValue(int $numericValue): ?Month
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.numeric_value = :val')
+            ->setParameter('val', $numericValue)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     //    /**
     //     * @return Month[] Returns an array of Month objects
     //     */

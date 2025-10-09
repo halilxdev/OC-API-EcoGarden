@@ -55,10 +55,12 @@ final class AdviceController extends AbstractController
      */
     #[Route('/api/conseil', name:"createAdvice", methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un conseil')]
-    public function createAdvice(Request $request, SerializerInterface $serializer, EntityManagerInterface $em,
-        UrlGeneratorInterface $urlGenerator, MonthRepository $monthRepository, ValidatorInterface $validator): JsonResponse {
+    public function createAdvice(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, MonthRepository $monthRepository, ValidatorInterface $validator): JsonResponse {
 
-        $advice = $serializer->deserialize($request->getContent(), Advice::class, 'json');
+        $content = $request->toArray();
+        
+        $advice = new Advice();
+        $advice->setText($content['text']);
 
         // On vérifie les erreurs
         $errors = $validator->validate($advice);
@@ -66,9 +68,12 @@ final class AdviceController extends AbstractController
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
-        $content = $request->toArray();
-        $month = $content['month'] ?? (int)date('n');
-        $advice->addMonth($monthRepository->find($month));
+        $monthValue = $content['month'] ?? (int)date('n');
+        $monthEntity = $monthRepository->findByNumericValue($monthValue);
+
+        if ($monthEntity) {
+            $advice->addMonth($monthEntity);
+        }
 
         $em->persist($advice);
         $em->flush();

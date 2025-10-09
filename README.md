@@ -6,19 +6,26 @@ Clé Lexik JWT : password -->
 
 ## Liste des routes
 
+### Sans authentification
+
 - [x] POST /api/user
 - [x] POST /api/auth
-- [x] PUT /api/user/{id}
-- [x] DELETE /api/user/{id}
+
+### Utilisateur sans privilèges
 
 - [x] GET /api/conseil/{mois}
 - [x] GET /api/conseil (mois en cours)
-- [ ] POST /api/conseil
+- [ ] GET /api/meteo/{ville}
+- [ ] GET /api/meteo (ville de l'utilisateur)
+
+### Utilisateur administrateurs
+
+- [x] POST /api/conseil
 - [ ] PUT /api/conseil/{id}
 - [ ] DELETE /api/conseil/{id}
 
-- [ ] GET /api/meteo/{ville}
-- [ ] GET /api/meteo (ville de l'utilisateur)
+- [x] PUT /api/user/{id}
+- [x] DELETE /api/user/{id}
 
 ## Exemple de paramètres (Headers) à envoyer sur les routes
 
