@@ -28,6 +28,7 @@ final class AdviceController extends AbstractController
      */
     #[Route('/api/conseil', name: 'advice_current_month', methods: ['GET'])]
     #[Route('/api/conseil/{id}', name: 'advice', methods: ['GET'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER', message: 'Vous devez vous authentifier.')]
     public function getAllAdvicesThisMonth(AdviceRepository $adviceRepository, SerializerInterface $serializer, ?int $id = null): JsonResponse
     {
         $month = $id ?? (int)date('n');
@@ -53,6 +54,7 @@ final class AdviceController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/conseil', name:"createAdvice", methods: ['POST'])]
+    #[IsGranted('ROLE_USER', message: 'Vous n\'avez pas les droits suffisants pour créer un livre')]
     public function createAdvice(Request $request, SerializerInterface $serializer, EntityManagerInterface $em,
         UrlGeneratorInterface $urlGenerator, MonthRepository $monthRepository, ValidatorInterface $validator): JsonResponse {
 
