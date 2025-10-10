@@ -32,15 +32,15 @@ class AdviceRepository extends ServiceEntityRepository
 
     public function findByMonthWithPagination($month, $page, $limit): array
     {
-        return $this->createQueryBuilder('a')
-            ->join('a.month', 'm')
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.month', 'm')
+            ->addSelect('m')
             ->andWhere('m.numeric_value = :month_value')
             ->setParameter('month_value', $month)
             ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult()
-        ;
+            ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
     }
 
     //    /**

@@ -18,6 +18,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 final class AdviceController extends AbstractController
 {
@@ -31,7 +33,7 @@ final class AdviceController extends AbstractController
     #[Route('/api/conseil', name: 'advice_current_month', methods: ['GET'])]
     #[Route('/api/conseil/{id}', name: 'advice', methods: ['GET'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_USER', message: 'Vous devez vous authentifier.')]
-    public function getAllAdvicesThisMonth(AdviceRepository $adviceRepository, SerializerInterface $serializer, ?int $id = null, Request $request): JsonResponse
+    public function getAllAdvicesThisMonth(AdviceRepository $adviceRepository, SerializerInterface $serializer, ?int $id = null, Request $request, TagAwareCacheInterface $cache): JsonResponse
     {
         $month = $id ?? (int)date('n');
 
@@ -41,10 +43,14 @@ final class AdviceController extends AbstractController
 
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 10);
+        $idCache = "getAllAdvicesThisMonth-" . $month . "-" . $page . "-" . $limit;
 
-        $adviceList = $adviceRepository->findByMonthWithPagination($month, $page, $limit);
-        $jsonAdviceList = $serializer->serialize($adviceList, 'json', ['groups' => 'getAdvices']);
-        return new JsonResponse($jsonAdviceList, Response::HTTP_OK, [], true);
+        $adviceList = $cache->get($idCache, function (ItemInterface $item) use ($adviceRepository, $month, $page, $limit) {
+            $item->tag("advicesCache");
+            return $adviceRepository->findByMonthWithPagination($month, $page, $limit);
+        });
+
+        return $this->json($adviceList, Response::HTTP_OK, [], ['groups' => 'getAdvices']);
     }
 
     /**
@@ -110,11 +116,12 @@ final class AdviceController extends AbstractController
 
     #[Route('/api/conseil/{id}', name: 'deleteAdvice', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour supprimer un conseil')]
-    public function deleteAdvice(int $id, AdviceRepository $adviceRepository, EntityManagerInterface $em): JsonResponse
+    public function deleteAdvice(int $id, AdviceRepository $adviceRepository, EntityManagerInterface $em, TagAwareCacheInterface $cachePool): JsonResponse
     {
         $advice = $adviceRepository->find($id);
         if($advice)
         {
+            $cachePool->invalidateTags(["advicesCache"]);
             foreach ($advice->getMonth() as $month) {
                 $advice->removeMonth($month);
             }
