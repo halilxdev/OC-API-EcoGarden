@@ -31,7 +31,7 @@ final class AdviceController extends AbstractController
     #[Route('/api/conseil', name: 'advice_current_month', methods: ['GET'])]
     #[Route('/api/conseil/{id}', name: 'advice', methods: ['GET'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_USER', message: 'Vous devez vous authentifier.')]
-    public function getAllAdvicesThisMonth(AdviceRepository $adviceRepository, SerializerInterface $serializer, ?int $id = null): JsonResponse
+    public function getAllAdvicesThisMonth(AdviceRepository $adviceRepository, SerializerInterface $serializer, ?int $id = null, Request $request): JsonResponse
     {
         $month = $id ?? (int)date('n');
 
@@ -39,7 +39,10 @@ final class AdviceController extends AbstractController
             throw new NotFoundHttpException('Le mois selectionné n\'existe pas. Veuillez indiquer un mois dans le format numérique entre 1 et 12');
         }
 
-        $adviceList = $adviceRepository->findByMonth($month);
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
+        $adviceList = $adviceRepository->findByMonthWithPagination($month, $page, $limit);
         $jsonAdviceList = $serializer->serialize($adviceList, 'json', ['groups' => 'getAdvices']);
         return new JsonResponse($jsonAdviceList, Response::HTTP_OK, [], true);
     }

@@ -61,15 +61,13 @@ class AppFixtures extends Fixture
         $manager->persist($userAdmin);
 
         // Création d'une trentaine de conseils
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $advice = new Advice();
             $advice->setText('Conseil numéro : ' . $i);
 
-            // Ajout d'entre 1 et 3 mois aléatoires pour chaque conseil
             $numberOfMonths = rand(1, 3);
             $selectedMonths = array_rand($months, $numberOfMonths);
 
-            // Si un seul mois est sélectionné, array_rand retourne un entier
             if (!is_array($selectedMonths)) {
                 $selectedMonths = [$selectedMonths];
             }
