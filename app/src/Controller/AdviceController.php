@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -73,23 +74,60 @@ final class AdviceController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un conseil')]
     public function createAdvice(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, MonthRepository $monthRepository, ValidatorInterface $validator): JsonResponse {
 
-        $content = $request->toArray();
-        $advice = new Advice();
-        $advice->setText($content['text']);
-        $errors = $validator->validate($advice);
-        if ($errors->count() > 0) {
-            throw new NotFoundHttpException('Une erreur est survenue. Un ou plusieurs champs sont vides ou incorrects.');
+        try {
+            $content = $request->toArray();
+        } catch (\JsonException $e) {
+            throw new BadRequestHttpException('Le format JSON est invalide : ' . $e->getMessage());
+        }
+
+        if (!isset($content['text']) || empty(trim($content['text']))) {
+            return $this->json([
+                'error' => 'Validation échouée',
+                'details' => ['text' => 'Le champ text est requis et ne peut pas être vide']
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $monthValue = $content['month'] ?? (int)date('n');
-        $monthEntity = $monthRepository->findByNumericValue($monthValue);
-
-        if ($monthEntity) {
-            $advice->addMonth($monthEntity);
+        if (!is_numeric($monthValue) || $monthValue < 1 || $monthValue > 12) {
+            return $this->json([
+                'error' => 'Validation échouée',
+                'details' => ['month' => 'Le mois doit être un nombre entre 1 et 12']
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        $em->persist($advice);
-        $em->flush();
+        $monthEntity = $monthRepository->findByNumericValue($monthValue);
+        if (!$monthEntity) {
+            return $this->json([
+                'error' => 'Ressource non trouvée',
+                'details' => ['month' => 'Le mois spécifié n\'existe pas en base de données']
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $advice = new Advice();
+        $advice->setText(trim($content['text']));
+        $advice->addMonth($monthEntity);
+
+        $errors = $validator->validate($advice);
+        if ($errors->count() > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $this->json([
+                'error' => 'Validation échouée',
+                'details' => $errorMessages
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $em->persist($advice);
+            $em->flush();
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Erreur serveur',
+                'details' => 'Impossible de sauvegarder le conseil. Veuillez réessayer.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         $jsonAdvice = $serializer->serialize($advice, 'json', ['groups' => 'getAdvices']);
         return new JsonResponse($jsonAdvice, Response::HTTP_CREATED, [], true);
@@ -98,20 +136,65 @@ final class AdviceController extends AbstractController
 
     #[Route('/api/conseil/{id}', name:"updateAdvice", methods:['PUT'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour mettre à jour le conseil')]
-    public function updateAdvice(int $id, AdviceRepository $adviceRepository, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse 
+    public function updateAdvice(int $id, AdviceRepository $adviceRepository, Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
         $advice = $adviceRepository->find($id);
-        if($advice)
-        {
+        if (!$advice) {
+            return $this->json([
+                'error' => 'Ressource non trouvée',
+                'details' => 'Le conseil avec l\'ID ' . $id . ' n\'existe pas'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $content = $request->toArray();
+        } catch (\JsonException $e) {
+            throw new BadRequestHttpException('Le format JSON est invalide : ' . $e->getMessage());
+        }
+
+        if (isset($content['text']) && empty(trim($content['text']))) {
+            return $this->json([
+                'error' => 'Validation échouée',
+                'details' => ['text' => 'Le champ text ne peut pas être vide']
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
             $updatedAdvice = $serializer->deserialize($request->getContent(),
                     Advice::class,
                     'json',
                     [AbstractNormalizer::OBJECT_TO_POPULATE => $advice]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Erreur de désérialisation',
+                'details' => 'Impossible de traiter les données fournies'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Validation de l'entité mise à jour
+        $errors = $validator->validate($updatedAdvice);
+        if ($errors->count() > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $this->json([
+                'error' => 'Validation échouée',
+                'details' => $errorMessages
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
             $em->persist($updatedAdvice);
             $em->flush();
-            return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Erreur serveur',
+                'details' => 'Impossible de mettre à jour le conseil. Veuillez réessayer.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        throw new NotFoundHttpException('Le conseil selectionné n\'existe pas. Veuillez réessayer.');
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/api/conseil/{id}', name: 'deleteAdvice', methods: ['DELETE'])]
